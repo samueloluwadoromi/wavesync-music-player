@@ -17,7 +17,7 @@ const {width, height} = Dimensions.get('window');
 
 export default function HomeScreen() {
   return (
-    <View style={styles.container}>
+    <View>
       
       <FlatList 
         data={tracks}
@@ -31,10 +31,4 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  });
+

@@ -1,31 +1,54 @@
-import { StyleSheet } from 'react-native';
+import { FlatList, StyleSheet, TextInput } from 'react-native';
 
 import EditScreenInfo from '@/src/components/EditScreenInfo';
 import { Text, View } from '@/src/components/Themed';
+import React, { useState } from 'react';
+import TrackListItem from '@/src/components/TrackListItem';
+import { tracks } from '@/assets/data/tracks';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { FontAwesome } from '@expo/vector-icons';
 
-export default function TabTwoScreen() {
+export default function SearchScreen() {
+  const [search, setSearch]= useState('');
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/two.tsx" />
-    </View>
+    <SafeAreaView>
+      <View style={styles.header}>
+        <FontAwesome name='search' size={16} color='#EDF4F2'/>
+        <TextInput 
+          placeholder='What do you want to listen to' 
+          style={styles.input}
+          placeholderTextColor='rgba(0, 0, 0, 0.4)'
+          value={search}
+          onChangeText={setSearch}
+        />
+        <Text onPress={() => setSearch('')}>
+          Cancel
+        </Text>
+      </View>
+
+      <FlatList 
+        data={tracks}
+        renderItem={( {item} ) => 
+          <TrackListItem tracks={ item }/>
+        }
+        showsVerticalScrollIndicator={false}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    padding: 10,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  input: {
+    flex: 1,
+    backgroundColor: '#EDF4F2',
+    padding: 8,
+    marginHorizontal: 10,
+    borderRadius: 5,
+    color: '#000000'
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});
+})

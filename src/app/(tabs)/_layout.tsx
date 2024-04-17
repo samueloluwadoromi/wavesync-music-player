@@ -56,7 +56,7 @@ export default function TabLayout() {
         }}
       />
 
-<Tabs.Screen
+      <Tabs.Screen
         name="favorite"
         options={{
           title: 'Favorite',
