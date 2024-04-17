@@ -4,9 +4,10 @@ import {
     StyleSheet, 
     Image, 
     Dimensions, 
-    SafeAreaView 
+    Pressable,
 } from 'react-native';
 import { Track } from '../types';
+import { usePlayerContext } from '../providers/PlayerProvider';
 
 type TrackListItemProps = {
     tracks: Track
@@ -15,8 +16,14 @@ type TrackListItemProps = {
 const {width, height} = Dimensions.get('window');
 
 export default function TrackListItem({ tracks }: TrackListItemProps){
+
+    const { setTrack } = usePlayerContext();
+
     return(
-        <View style={styles.container}>
+        <Pressable 
+            style={styles.container}
+            onPress={() => setTrack(tracks)}
+            >
             <Image source={{ uri: tracks.album.images[0]?.url}} style={styles.image}/>
 
             <View style={styles.trackDetails}>
@@ -27,8 +34,8 @@ export default function TrackListItem({ tracks }: TrackListItemProps){
                     {tracks.artists[0]?.name}
                 </Text>
             </View>
-        </View>
-    )
+        </Pressable>
+    );
 }
 
 const styles = StyleSheet.create({
