@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { AVPlaybackStatus, Audio } from 'expo-av';
 import { Sound } from 'expo-av/build/Audio';
 import Slider from '@react-native-community/slider';
-import MarqueeText from 'react-native-marquee-ab';
+// import  MarqueeText  from 'react-native-marquee-ab';
 
 
 const track = tracks[0];
@@ -119,12 +119,9 @@ const Player = () => {
           <View style={styles.maxMainPlayer}>
             {/** song details */}
             <View>
-              {/* <Text style={[styles.songContent, styles.songTitle]}>
+              <Text style={[styles.songContent, styles.songTitle]}>
                 {track.name}
-              </Text> */}
-              <MarqueeText style={[styles.songContent, styles.songTitle]} scroll={true} marqueeOnMount={true} loop={true} marqueeDelay={5000}>
-                {track.name}
-              </MarqueeText>
+              </Text>
               <Text style={[styles.songContent, styles.songArtist]}>
                 {track.artists[0]?.name}
               </Text>
