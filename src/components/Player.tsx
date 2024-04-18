@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, Dimensions, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, Dimensions, ImageBackground, LayoutAnimation } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { tracks } from '../../assets/data/tracks';
 import { usePlayerContext } from '../providers/PlayerProvider';
@@ -36,8 +36,9 @@ const Player = () => {
 
     /** Change player size */
     const toggleMaximized = () => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       setMaximized(!maximized);
-    }
+    };
 
     /** Play selected track */
     const playTrack = async () => {
@@ -82,116 +83,117 @@ const Player = () => {
 
   const image = track.album.images?.[0];
 
-  if (!maximized) {
-    return (
-      <TouchableOpacity style={styles.container} onPress={toggleMaximized}>
-        <View style={styles.player}>
-          {image && <Image source={{ uri: image.url }} style={styles.image} />}
-
-          <View style={{ flex: 1 }}>
-            <Text style={styles.title}>{track.name}</Text>
-            <Text style={styles.subtitle}>{track.artists[0]?.name}</Text>
-          </View>
-
-          <Ionicons
-            name={'heart-outline'}
-            size={20}
-            color={'white'}
-            style={{ marginHorizontal: 10 }} />
-          <Ionicons
-            onPress={onPlayPause}
-            disabled={!track?.preview_url}
-            name={isPlaying ? 'pause' : 'play'}
-            size={22}
-            color={track?.preview_url ? 'white' : 'gray'} />
-        </View>
-      </TouchableOpacity>
-    )
-  }
-
   return (
-      <SafeAreaView style={[styles.maxContainer]}>
-        <TouchableOpacity style={styles.backButton} onPress={toggleMaximized}>
-          <Ionicons name="chevron-down" size={36} color="#EDF4F2" />
-        </TouchableOpacity>
-        
-        <ImageBackground source={{ uri: image.url }} style={styles.musicImage}>
-          <View style={styles.maxMainPlayer}>
-            {/** song details */}
-            <View>
-              <Text style={[styles.songContent, styles.songTitle]}>
-                {track.name}
-              </Text>
-              <Text style={[styles.songContent, styles.songArtist]}>
-                {track.artists[0]?.name}
-              </Text>
+    <View>
+      {!maximized ? (
+        <TouchableOpacity style={styles.container} onPress={toggleMaximized}>
+          <View style={styles.player}>
+            {image && <Image source={{ uri: image.url }} style={styles.image} />}
+
+            <View style={{ flex: 1 }}>
+              <Text style={styles.title}>{track.name}</Text>
+              <Text style={styles.subtitle}>{track.artists[0]?.name}</Text>
             </View>
 
-            {/** song duration slider */}
-            <View>
-              <Slider 
-                style={styles.progressBar}
-                value={0}
-                minimumValue={0}
-                maximumValue={100}
-                thumbTintColor="#EDF4F2"
-                minimumTrackTintColor="#EDF4F2"
-                maximumTrackTintColor="#EDF4F2"
-                onSlidingComplete={() => {}}
-              />
-
-              <View style={styles.progressLevelDuration}>
-                <Text style={styles.progressLabelText}>
-                  00:00
-                </Text>
-                <Text style={styles.progressLabelText}>
-                  00:00
-                </Text>
-              </View>
-            </View>
-            {/** music controls */}
-            <View style={styles.musicControls}>
-              <TouchableOpacity onPress={() => {}}>
-                  <Ionicons name="shuffle" size={30} color="#EDF4F2" />
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => {}}>
-                  <Ionicons name="play-skip-back" size={30} color="#EDF4F2" />
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => {}}>
-                <Ionicons
-                  onPress={onPlayPause}
-                  disabled={!track?.preview_url}
-                  name={isPlaying ? 'pause-circle' : 'play-circle'}
-                  size={75}
-                  color={track?.preview_url ? '#EDF4F2' : '#EDF4F2'} />
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => {}}>
-                  <Ionicons name="play-skip-forward" size={30} color="#EDF4F2" />
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => {}}>
-                  <Ionicons name="repeat" size={30} color="#EDF4F2" />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.bottomcontainer}>
-              <View style={styles.bottomIconWrapper}>
-                  <TouchableOpacity onPress={() => {}}>
-                      <Ionicons name="share-outline" size={25} color="#EDF4F2" />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity onPress={() => {}}>
-                      <Ionicons name="heart-outline" size={25} color="#EDF4F2" />
-                  </TouchableOpacity>
-              </View>
-            </View>
+            <Ionicons
+              name={'heart-outline'}
+              size={20}
+              color={'white'}
+              style={{ marginHorizontal: 10 }} />
+            <Ionicons
+              onPress={onPlayPause}
+              disabled={!track?.preview_url}
+              name={isPlaying ? 'pause' : 'play'}
+              size={22}
+              color={track?.preview_url ? 'white' : 'gray'} />
           </View>
-        </ImageBackground>
-        
-      </SafeAreaView>
+        </TouchableOpacity>
+      ) : (
+        <SafeAreaView style={[styles.maxContainer]}>
+          <TouchableOpacity style={styles.backButton} onPress={toggleMaximized}>
+            <Ionicons name="chevron-down" size={36} color="#EDF4F2" />
+          </TouchableOpacity>
+          
+          <ImageBackground source={{ uri: image.url }} style={styles.musicImage}>
+            <View style={styles.maxMainPlayer}>
+              {/** song details */}
+              <View>
+                <Text style={[styles.songContent, styles.songTitle]}>
+                  {track.name}
+                </Text>
+                <Text style={[styles.songContent, styles.songArtist]}>
+                  {track.artists[0]?.name}
+                </Text>
+              </View>
+
+              {/** song duration slider */}
+              <View>
+                <Slider 
+                  style={styles.progressBar}
+                  value={0}
+                  minimumValue={0}
+                  maximumValue={100}
+                  thumbTintColor="#EDF4F2"
+                  minimumTrackTintColor="#EDF4F2"
+                  maximumTrackTintColor="#EDF4F2"
+                  onSlidingComplete={() => {}}
+                />
+
+                <View style={styles.progressLevelDuration}>
+                  <Text style={styles.progressLabelText}>
+                    00:00
+                  </Text>
+                  <Text style={styles.progressLabelText}>
+                    00:00
+                  </Text>
+                </View>
+              </View>
+              {/** music controls */}
+              <View style={styles.musicControls}>
+                <TouchableOpacity onPress={() => {}}>
+                    <Ionicons name="shuffle" size={30} color="#EDF4F2" />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => {}}>
+                    <Ionicons name="play-skip-back" size={30} color="#EDF4F2" />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => {}}>
+                  <Ionicons
+                    onPress={onPlayPause}
+                    disabled={!track?.preview_url}
+                    name={isPlaying ? 'pause-circle' : 'play-circle'}
+                    size={75}
+                    color={track?.preview_url ? '#EDF4F2' : '#EDF4F2'} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => {}}>
+                    <Ionicons name="play-skip-forward" size={30} color="#EDF4F2" />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => {}}>
+                    <Ionicons name="repeat" size={30} color="#EDF4F2" />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.bottomcontainer}>
+                <View style={styles.bottomIconWrapper}>
+                    <TouchableOpacity onPress={() => {}}>
+                        <Ionicons name="share-outline" size={25} color="#EDF4F2" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => {}}>
+                        <Ionicons name="heart-outline" size={25} color="#EDF4F2" />
+                    </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </ImageBackground>
+          
+        </SafeAreaView>
+      )
+    }
+    </View>
   );
 };
 
