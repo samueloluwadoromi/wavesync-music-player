@@ -14,8 +14,10 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
+    "@react-native-community/slider": "^4.5.2",
     "@react-navigation/native": "^6.0.2",
     "expo": "~50.0.14",
+    "expo-av": "~13.10.5",
     "expo-font": "~11.10.3",
     "expo-linking": "~6.2.2",
     "expo-router": "~3.4.8",
@@ -27,6 +29,7 @@
     "react-dom": "18.2.0",
     "react-native": "0.73.6",
     "react-native-linear-gradient": "^2.8.3",
+    "react-native-marquee-ab": "^1.2.6",
     "react-native-safe-area-context": "4.8.2",
     "react-native-screens": "~3.29.0",
     "react-native-vector-icons": "^10.0.3",
