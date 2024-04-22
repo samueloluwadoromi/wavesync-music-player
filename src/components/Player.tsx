@@ -14,68 +14,115 @@ const track = tracks[0];
 const {width, height} = Dimensions.get('window');
 
 const Player = () => {
-    const { track } = usePlayerContext();
-    const [ sound, setSound ] = useState<Sound>();
-    const [ isPlaying, setIsPlaying ] = useState(false);
-    const [ maximized, setMaximized] = useState(false);
+  const { track } = usePlayerContext();
+  const [ sound, setSound ] = useState<Sound>();
+  const [ isPlaying, setIsPlaying ] = useState(false);
+  const [ maximized, setMaximized] = useState(false);
+  const [ isRepeated, setIsRepeated ] = useState(false);
+  const [ position, setPosition ] = useState('00:00');
+  const [ sliderPosition, setSliderPosition ] = useState(0);
+  const [ sliderDuration, setSliderDuration ] = useState();
+  const [ songDuration, setSongDuration ] = useState('00:00');
 
-    useEffect(() => {
-      if (track){
-        playTrack();
-      }
-    }, [track]);
+  useEffect(() => {
+    if (track){
+      playTrack();
+    }
+  }, [track]);
 
-    useEffect(() => {
-      return sound
-      ? () => {
-        console.log('Unloading Sound');
-        sound.unloadAsync();
-      }
-      : undefined;
-    }, [sound]);
+  useEffect(() => {
+    return sound
+    ? () => {
+      console.log('Unloading Sound');
+      sound.unloadAsync();
+    }
+    : undefined;
+  }, [sound]);
 
-    /** Change player size */
-    const toggleMaximized = () => {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-      setMaximized(!maximized);
-    };
+  /** Change player size */
+  const toggleMaximized = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setMaximized(!maximized);
+  };
 
-    /** Play selected track */
-    const playTrack = async () => {
-      if (sound){
-        await sound.unloadAsync();
-      }
-      if (!track?.preview_url){
-        return;
-      }
-      const { sound: newSound } = await Audio.Sound.createAsync({
-        uri: track.preview_url,
-      });
-      setSound(newSound);
-      newSound.setOnPlaybackStatusUpdate(onPlayBackStatusUpdate);
-      await newSound.playAsync();
-    };
+  /** Play selected track */
+  const playTrack = async () => {
+    if (sound){
+      await sound.unloadAsync();
+    }
+    if (!track?.preview_url){
+      return;
+    }
+    const { sound: newSound } = await Audio.Sound.createAsync({
+      uri: track.preview_url,
+    });
+    setSound(newSound);
+    newSound.setOnPlaybackStatusUpdate(onPlayBackStatusUpdate);
+    await newSound.playAsync();
+  };
 
-    /** Get the playback status and record if the song is playing */
-    const onPlayBackStatusUpdate = (status: AVPlaybackStatus) => {
-      console.log(status)
-      if (!status.isLoaded){
-        return
-      }
-      setIsPlaying(status.isPlaying);
-    };
+  /** Get the playback status and record if the song is playing */
+  const onPlayBackStatusUpdate = (status: AVPlaybackStatus) => {
+    console.log(status)
+    if (!status.isLoaded){
+      return
+    }
+    setIsPlaying(status.isPlaying);
 
-    /** Control the play and pause function of the music player */
-    const onPlayPause = async () => {
-      if (!sound) {
-        return
-      }
-      if (isPlaying) {
-        await sound.pauseAsync();
-      } else {
-        await sound.playAsync();
-      }
-    };
+    setSliderPosition(status.positionMillis);
+    setSliderDuration(status.playableDurationMillis);
+
+    // Calculate the postion and duration in seconds
+    const positionInSeconds = status.positionMillis / 1000;
+    const durationInSeconds = status.durationMillis / 1000;
+
+    // Format the position and duration into mm:ss format
+    const positionFormatted = formatTime(positionInSeconds);
+    const durationFormatted = formatTime(durationInSeconds);
+
+    // Update the UI with the position and duration
+    setPosition(positionFormatted);
+    setSongDuration(durationFormatted);
+  };
+
+  /** Function to format time into mm:ss format */
+  const formatTime = (timeInSeconds: number) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  /** Control the play and pause function of the music player */
+  const onPlayPause = async () => {
+    if (!sound) {
+      return
+    }
+    if (isPlaying) {
+      await sound.pauseAsync();
+    } else {
+      await sound.playAsync();
+    }
+  };
+
+  /** Control song repeat functions */
+  // const toggleRepeatMode = () = {
+  //   setIsRepeated(!isRepeated);
+  // };
+
+  /** shuffle the songs */
+  const shuffleSongs = () => {
+    // Implement Shuffle
+  };
+  
+  /** play the previous song */
+  const playPreviousSong = () => {
+    // Implement playing previous song logic here
+  };
+  
+  /** play the next song */
+  const playNextSong = () => {
+    // Implement playing next song logic here
+  };
 
   if (!track) {
     return null;
@@ -130,32 +177,32 @@ const Player = () => {
               <View>
                 <Slider 
                   style={styles.progressBar}
-                  value={0}
+                  value={sliderPosition}
                   minimumValue={0}
-                  maximumValue={100}
+                  maximumValue={sliderDuration}
                   thumbTintColor="#EDF4F2"
                   minimumTrackTintColor="#EDF4F2"
-                  maximumTrackTintColor="#EDF4F2"
+                  maximumTrackTintColor="#31473A"
                   onSlidingComplete={() => {}}
                 />
 
                 <View style={styles.progressLevelDuration}>
                   <Text style={styles.progressLabelText}>
-                    00:00
+                    {position}
                   </Text>
                   <Text style={styles.progressLabelText}>
-                    00:00
+                    {songDuration}
                   </Text>
                 </View>
               </View>
               {/** music controls */}
               <View style={styles.musicControls}>
                 <TouchableOpacity onPress={() => {}}>
-                    <Ionicons name="shuffle" size={30} color="#EDF4F2" />
+                    <Ionicons name="shuffle" size={30} color="#EDF4F2" onPress={shuffleSongs}/>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => {}}>
-                    <Ionicons name="play-skip-back" size={30} color="#EDF4F2" />
+                    <Ionicons name="play-skip-back" size={30} color="#EDF4F2" onPress={playPreviousSong}/>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => {}}>
@@ -168,7 +215,7 @@ const Player = () => {
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => {}}>
-                    <Ionicons name="play-skip-forward" size={30} color="#EDF4F2" />
+                    <Ionicons name="play-skip-forward" size={30} color="#EDF4F2" onPress={playNextSong}/>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => {}}>
