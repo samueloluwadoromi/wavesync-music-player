@@ -1,5 +1,3 @@
-Here’s a detailed description for your WaveSync Music Player application on GitHub:
-
 ---
 
 # WaveSync Music Player
@@ -71,10 +69,6 @@ Contributions are welcome! If you would like to contribute to this project, plea
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-For any inquiries or feedback, please reach out to Samuel B.I. Oluwadoromi at [samueloluwadoromi@gmail.com](mailto:samueloluwadoromi@gmail.com).
 
 ---
 
