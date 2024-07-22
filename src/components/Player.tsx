@@ -9,31 +9,36 @@ import Slider from '@react-native-community/slider';
 // import  MarqueeText  from 'react-native-marquee-ab';
 
 
-const track = tracks[0];
+//const track = tracks[0];
 
+// get dimension of the device screen
 const {width, height} = Dimensions.get('window');
 
 const Player = () => {
-  const { track } = usePlayerContext();
+  // use the track from context
+  const { track, setTrack } = usePlayerContext();
+
+  /** Initializing state variables */
   const [ sound, setSound ] = useState<Sound>();
   const [ isPlaying, setIsPlaying ] = useState(false);
   const [ maximized, setMaximized] = useState(false);
   const [ isRepeated, setIsRepeated ] = useState(false);
   const [ position, setPosition ] = useState('00:00');
   const [ sliderPosition, setSliderPosition ] = useState(0);
-  const [ sliderDuration, setSliderDuration ] = useState();
+  const [sliderDuration, setSliderDuration] = useState<number | undefined>(undefined);
   const [ songDuration, setSongDuration ] = useState('00:00');
 
+  /** handle changes in the selected track */
   useEffect(() => {
     if (track){
       playTrack();
     }
   }, [track]);
 
+  /** handle unloading the track when a new track is selected */
   useEffect(() => {
     return sound
     ? () => {
-      console.log('Unloading Sound');
       sound.unloadAsync();
     }
     : undefined;
@@ -63,10 +68,16 @@ const Player = () => {
 
   /** Get the playback status and record if the song is playing */
   const onPlayBackStatusUpdate = (status: AVPlaybackStatus) => {
-    console.log(status)
+    //console.log(status)
     if (!status.isLoaded){
       return
     }
+
+    // If the playback has ended and repeat mode is active, replay the song
+    if (status.didJustFinish && isRepeated) {
+      playTrack();
+    }
+
     setIsPlaying(status.isPlaying);
 
     setSliderPosition(status.positionMillis);
@@ -74,7 +85,7 @@ const Player = () => {
 
     // Calculate the postion and duration in seconds
     const positionInSeconds = status.positionMillis / 1000;
-    const durationInSeconds = status.durationMillis / 1000;
+    const durationInSeconds = (status.durationMillis ?? 0) / 1000;
 
     // Format the position and duration into mm:ss format
     const positionFormatted = formatTime(positionInSeconds);
@@ -104,10 +115,17 @@ const Player = () => {
     }
   };
 
+  /** Control the song position with the slider */
+  const onSliderValueChange = (value: number) => {
+    if (sound) {
+      sound.setPositionAsync(value);
+    }
+  };
+
   /** Control song repeat functions */
-  // const toggleRepeatMode = () = {
-  //   setIsRepeated(!isRepeated);
-  // };
+  const toggleRepeatMode = () => {
+    setIsRepeated(!isRepeated);
+  };
 
   /** shuffle the songs */
   const shuffleSongs = () => {
@@ -115,13 +133,35 @@ const Player = () => {
   };
   
   /** play the previous song */
-  const playPreviousSong = () => {
-    // Implement playing previous song logic here
+  const playPreviousSong = async () => {
+    if (!track){
+      return;
+    }
+
+    const currentIndex = tracks.findIndex((item) => item.id === track.id);
+    const previousIndex = currentIndex === 0 ? tracks.length - 1 : currentIndex - 1;
+    const previousTrack = tracks[previousIndex]; 
+
+    if (previousTrack){
+      // update the player context with the previous track
+      setTrack(previousTrack)
+    }
   };
   
   /** play the next song */
-  const playNextSong = () => {
-    // Implement playing next song logic here
+  const playNextSong = async() => {
+    if (!track) {
+      return;
+    }
+
+    const currentIndex = tracks.findIndex((item) => item.id === track.id);
+    const nextIndex = (currentIndex + 1) % tracks.length;
+    const nextTrack = tracks[nextIndex];
+
+    if (nextTrack) {
+      // update the player context with the next track
+      setTrack(nextTrack);
+    }
   };
 
   if (!track) {
@@ -183,7 +223,12 @@ const Player = () => {
                   thumbTintColor="#EDF4F2"
                   minimumTrackTintColor="#EDF4F2"
                   maximumTrackTintColor="#31473A"
-                  onSlidingComplete={() => {}}
+                  onSlidingComplete={(value) => {
+                    if (value === sliderDuration && !isRepeated) {
+                      playNextSong();
+                    }
+                  }}
+                  onValueChange={onSliderValueChange}
                 />
 
                 <View style={styles.progressLevelDuration}>
@@ -219,7 +264,7 @@ const Player = () => {
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => {}}>
-                    <Ionicons name="repeat" size={30} color="#EDF4F2" />
+                    <Ionicons name="repeat" size={30} color={isRepeated ? '#31473A' : '#EDF4F2'} onPress={toggleRepeatMode} />
                 </TouchableOpacity>
               </View>
 

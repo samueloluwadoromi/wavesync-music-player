@@ -26,4 +26,4 @@ export default function PlayerProvider({children}: PropsWithChildren){
     );
 }
 
-export const usePlayerContext = () => useContext(PlayerContext);
+export const usePlayerContext = (): PlayerContextType => useContext(PlayerContext);
